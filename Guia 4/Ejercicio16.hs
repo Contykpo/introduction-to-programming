@@ -19,6 +19,20 @@ esPrimo' n d    | d > (n `div` 2) = True
                 | n `mod` d == 0  = False
                 | otherwise = esPrimo' n (d + 1)
 
+esPrimoLista :: Int -> Bool
+esPrimoLista n  | n == 1 = False
+                | n == 2 = True
+                | not (null [x | x <- [2 .. n-1], mod n x == 0]) = False
+                | otherwise = True
+
+{-
+esPrimoLista :: Int -> Bool
+esPrimoLista n  | n == 1 = False
+                | n == 2 = True
+                | (length [x | x <- [2 .. n-1], mod n x == 0]) > 0 = False
+                | otherwise = True
+-}
+
 -- C
 sonCoprimos :: Int -> Int -> Bool
 sonCoprimos x y = sonCoprimos' x y y

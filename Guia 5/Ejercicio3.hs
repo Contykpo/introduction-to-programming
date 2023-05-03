@@ -11,9 +11,14 @@ productoria lista | lista == [] = 0
                 | otherwise = (head lista) * productoria (tail lista)
 
 -- C
-maximo :: [Integer] -> Integer
-maximo lista    | longitud lista <= 1 = if longitud lista == 1 then head lista else 0
-                | otherwise = max (head lista) (maximo (tail lista))
+--maximo :: [Integer] -> Integer
+--maximo lista    | longitud lista <= 1 = if longitud lista == 1 then head lista else 0
+--                | otherwise = max (head lista) (maximo (tail lista))
+
+maximo :: [Int] -> Int
+maximo (x:xs)   | cantidadElementos (x:xs) == 1 = x
+                | cantidadElementos (x:xs) == 0 = 0
+                | otherwise = max x (maximo xs)
 
 -- D
 sumarN :: Integer -> [Integer] -> [Integer]

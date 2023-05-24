@@ -10,7 +10,7 @@ def sePuedeLlegar(origen: str, destino: str, vuelos: List[Tuple[str, str]]) -> i
     vuelosNecesarios: int = 0
     vuelosActuales: List[Tuple[str, str]] = vuelos
     while ciudadActual != destino and len(vuelosActuales) > 0:
-      for iterador in range(1,len(vuelosActuales),1):
+      for iterador in range(0,len(vuelosActuales),1):
         if ciudadActual == vuelosActuales[iterador][0]:
           ciudadActual = vuelosActuales[iterador][1]
           vuelosNecesarios += 1

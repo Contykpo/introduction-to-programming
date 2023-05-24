@@ -7,8 +7,8 @@ def filasParecidas(matriz: List[List[int]]) -> bool :
   if esMatriz(matriz):
     nDiferencia: int = 0
     alerta: int = 0
-    for fila in range(1,len(matriz),1):
-      for columna in range(1,len(matriz[fila]),1):
+    for fila in range(0,len(matriz),1):
+      for columna in range(0,len(matriz[fila]),1):
         if columna == 1:
           nDiferencia = matriz[fila][columna] - matriz[fila-1][columna]
         if matriz[fila][columna] != (matriz[fila-1][columna] + nDiferencia):
@@ -18,7 +18,7 @@ def filasParecidas(matriz: List[List[int]]) -> bool :
 def esMatriz(listaDeListas: List[List[int]]) -> bool:
   alarma: int = 0
   if len(listaDeListas) > 0 and len(listaDeListas[0]) > 0:
-    for iterator in range(1, len(listaDeListas), 1):
+    for iterator in range(0, len(listaDeListas), 1):
       if len(listaDeListas[iterator]) != len(listaDeListas[0]):
         alarma += 1
   else:

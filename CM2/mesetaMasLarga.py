@@ -4,11 +4,22 @@ from typing import List
 # l: List[int]  <--Este es un ejemplo para una lista de enteros.
 # Respetar esta sintaxis, ya que el CMS dirá que no pasó ningún test si usan otra notación.
 def mesetaMasLarga(l: List[int]) -> int :
-  masLarga = l[0]
+  if len(l) <= 0:
+    return 0
+  plataforma: int = l[0]
+  metrica: int = 0
+  metricas: List[int] = []
   for meseta in l:
-    if meseta > masLarga:
-      masLarga = meseta
-  return masLarga
+    if plataforma == meseta:
+      plataforma = meseta
+      metrica += 1
+    else:
+      plataforma = meseta
+      metricas.append(metrica)
+      metrica = 1
+  metricas.append(metrica)
+  return max(metricas)
+
 
 if __name__ == '__main__':
   x = input()

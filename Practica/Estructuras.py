@@ -1,5 +1,10 @@
 # Simulador de cocina restaurante:
 
+# TODO: Actualizar el programa para permitir la generacion de recibos archivos de texto para cada cliente _
+# TODO: _ y por ultimo un resumen del dia para la administracion del restaurante.
+
+# Tambien estaria bueno especificar el programa final en el cuaderno y escribir una pequeña test-suite.
+
 from typing import Tuple
 
 from typing import List
@@ -22,7 +27,7 @@ def cargarClientes(clients: List[str]) -> Queue[str]:
     return clientes
 
 
-def managementRestaurante(comensales: Queue[str]) -> List[Tuple[str, str, int]]:
+def administracionRestaurante(comensales: Queue[str]) -> List[Tuple[str, str, int]]:
     comensalesNoAtentidos: Queue[str] = comensales
     reporte: List[Tuple[str, str, int]] = []
     while not comensalesNoAtentidos.empty():
@@ -61,4 +66,4 @@ def atenderComensal(comensal: str) -> Tuple[str, str, int]:
     return (comensal, "no pidio nada", 0)
 
 
-print("El reporte del dia de hoy es:\n"+str(managementRestaurante(cargarClientes(hambrientos))))
+print("El reporte del dia de hoy es:\n"+str(administracionRestaurante(cargarClientes(hambrientos))))

@@ -1,0 +1,4 @@
+('Bigote', 'Anana', 1640)
+('Samurai', 'Anana', 1640)
+('Charley', 'JYQ', 220)
+('Eber', 'Cebolla', 200)

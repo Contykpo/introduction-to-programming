@@ -1,9 +1,6 @@
 # Simulador de cocina restaurante:
 
-# TODO: Actualizar el programa para permitir la generacion de recibos archivos de texto para cada cliente _
-# TODO: _ y por ultimo un resumen del dia para la administracion del restaurante.
-
-# Tambien estaria bueno especificar el programa final en el cuaderno y escribir una pequeña test-suite.
+# TODO: Tambien estaria bueno especificar el programa final en el cuaderno y escribir una pequeña test-suite.
 
 from typing import Tuple
 
@@ -12,6 +9,9 @@ from typing import Dict
 
 from queue import Queue
 from queue import LifoQueue
+
+from datetime import datetime
+
 
 opcionMenu: List[str] = ["Pizzas", "Empanadas", "Hamburguesas"]
 
@@ -30,9 +30,16 @@ def cargarClientes(clients: List[str]) -> Queue[str]:
 def administracionRestaurante(comensales: Queue[str]) -> List[Tuple[str, str, int]]:
     comensalesNoAtentidos: Queue[str] = comensales
     reporte: List[Tuple[str, str, int]] = []
+    fecha = datetime.now()
+    archivoReporte = open("ReporteDia_["+str(fecha.strftime('%Y-%m-%d-%H-%M-%S'))+"].txt","w")
     while not comensalesNoAtentidos.empty():
         comensal:str = comensalesNoAtentidos.get()
         reporte.append(atenderComensal(comensal))
+    if len(reporte) > 0:
+        for operacion in reporte:
+            archivoReporte.write(str(reporte.index(operacion))+" - "+str(operacion)+"\n\n")
+        archivoReporte.close()
+        print("\nReporte completado y archivado.")
     return reporte
 
 

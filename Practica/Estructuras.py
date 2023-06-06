@@ -72,5 +72,4 @@ def atenderComensal(comensal: str) -> Tuple[str, str, int]:
             print("\nNo se que hayas querido decir, pero te quedaste sin hamburguesas.")
     return (comensal, "no pidio nada", 0)
 
-
 print("El reporte del dia de hoy es:\n"+str(administracionRestaurante(cargarClientes(hambrientos))))

@@ -66,3 +66,22 @@ maxima :: [[Char]] -> [Char]
 maxima [] = []
 maxima [palabra] = palabra
 maxima (palabra1 : palabra2 : palabras) | length palabra1 > length palabra2 = maxima (palabra1 : palabras)
+
+-- Guia 5 - Ejercicio 3.8 - Multiplos de un numero entero dentro de una una lista de enteros
+
+multiplosN :: Integer -> [Integer] -> [Integer]
+multiplosN numero (elemento : elementos)    | null elementos = if mod elemento numero == 0 then [elemento] else []
+                                            | mod elemento numero == 0 = elemento : multiplosN numero elementos
+                                            | otherwise = multiplosN numero elementos
+
+-- Guia 5 - Ejercicio 4.7 - Aplanar lista de lista de caracteres con una n cantidad de espacios blancos.
+
+aplanarConNBlancos :: [[Char]] -> Integer -> [Char]
+aplanarConNBlancos [] _ = []
+aplanarConNBlancos (palabra : palabras) cantidad = palabra ++ generarNBlancos cantidad [] ++ aplanarConNBlancos palabras cantidad
+
+generarNBlancos :: Integer -> [Char] -> [Char]
+generarNBlancos 0 _ = []
+generarNBlancos cantidad blancos    | cantidad == 1 = ' ' : blancos
+                                    | otherwise = (' ' : blancos) ++ generarNBlancos (cantidad -1) blancos
+

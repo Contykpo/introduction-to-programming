@@ -51,10 +51,10 @@ pares (x:xs)    | even x = x : pares xs
                 | otherwise = pares xs
 
 -- H
-multiplosDeN :: Integer -> [Integer] -> [Integer]
-multiplosDeN n lista    | lista == [] = []
-                        | mod (head lista) n == 0 = (head lista) : (multiplosDeN n (tail lista))
-                        | otherwise = multiplosDeN n (tail lista)
+multiplosN :: Integer -> [Integer] -> [Integer]
+multiplosN numero (elemento : elementos)    | null elementos = if mod elemento numero == 0 then [elemento] else []
+                                            | mod elemento numero == 0 = elemento : multiplosN numero elementos
+                                            | otherwise = multiplosN numero elementos
 
 -- I
 ordenar :: [Integer] -> [Integer]

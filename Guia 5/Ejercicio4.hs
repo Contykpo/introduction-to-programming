@@ -19,19 +19,18 @@ contarCaracteres x (y:ys)   | x==y = 1 + contarCaracteres x ys
 
 -- C
 palabraMasLarga :: [Char] -> [Char]
-palabraMasLarga lista   | lista == [] = []
-                        | otherwise = masLarga (split [' '] lista)
+palabraMasLarga [] = []
+palabraMasLarga texto = maxima (generarPalabras texto [])
 
-masLarga :: [[Char]] -> [Char]
-masLarga xss = snd $ maximum $ [(length xs, xs) | xs <- xss]
+generarPalabras :: [Char] -> [Char] -> [[Char]]
+generarPalabras [] _ = []
+generarPalabras (caracter : caracteres) palabra | not (caracter == ' ') = generarPalabras caracteres (palabra ++ [caracter])
+                                                | otherwise = palabra : generarPalabras caracteres []
 
-split :: (Eq a) => [a] -> [a] -> [[a]]
-split _ [] = [[]]
-split sep (list_head:list_tail) =
-    if list_head `elem` sep
-        then []:splited_tail
-        else (list_head:(head splited_tail)):(tail splited_tail)
-    where splited_tail = split sep list_tail
+maxima :: [[Char]] -> [Char]
+maxima [] = []
+maxima [palabra] = palabra
+maxima (palabra1 : palabra2 : palabras) | length palabra1 > length palabra2 = maxima (palabra1 : palabras)
 
 -- D
 aplanarConBlancos :: [[Char]] -> [Char]

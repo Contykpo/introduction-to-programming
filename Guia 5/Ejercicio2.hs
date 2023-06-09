@@ -12,9 +12,9 @@ todosIguales lista  | lista == [] = False
 
 -- C
 todosDistintos :: (Eq t) => [t] -> Bool
-todosDistintos lista    | lista == [] = False
-                        | not (head lista == head (tail lista)) = True
-                        | otherwise = todosDistintos (tail lista)
+todosDistintos [] = True
+todosDistintos (elemento : elementos)   | elemento `elem` elementos = False
+                                        | otherwise = todosDistintos elementos
 
 -- D
 hayRepetidos :: (Eq t) => [t] -> Bool

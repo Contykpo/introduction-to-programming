@@ -1,5 +1,6 @@
 -- A
 type Set = [Integer]
+type SetX = [(Integer,Integer)]
 
 agregarATodos :: Integer -> [Set] -> [Set]
 agregarATodos _ [] = []
@@ -18,19 +19,19 @@ partes n = agregarTodos (partes (n-1)) n ++ partes (n-1)
 
 agregarTodos :: [[Integer]] -> Integer -> [[Integer]]
 agregarTodos [] _ = []
-agregarTodos (xs:xss) y = (y : xs) : agregarTodos xss y
+agregarTodos (conjunto : conjuntos) elemento = (elemento : conjunto) : agregarTodos conjuntos elemento
 
 -- C
 --productoCartesiano :: Set -> Set -> [(Integer, Integer)]
 --productoCartesiano xs ys = [(x,y) | x <- xs, y <- ys]
 
-productoCartesiano :: Set -> Set -> [(Integer,Integer)]
-productoCartesiano [] ys = []
-productoCartesiano (a:b) ys = (productoCartesiano' a ys) ++ (productoCartesiano b ys)
+productoCartesiano :: Set -> Set -> SetX
+productoCartesiano [] conjuntoB = []
+productoCartesiano (elementoA : elementosA) conjuntoB = (productoCartesianoAux elementoA conjuntoB) ++ (productoCartesiano elementosA conjuntoB)
 
-productoCartesiano' :: Integer -> Set -> [(Integer,Integer)]
-productoCartesiano' x [] = []
-productoCartesiano' x (a:b) = (x, a) : (productoCartesiano' x b)
+productoCartesianoAux :: Integer -> Set -> SetX
+productoCartesianoAux x [] = []
+productoCartesianoAux elementoA (elementoB : elementosB) = (elementoA, elementoB) : (productoCartesianoAux elementoA elementosB)
 
 -- Helper Functions --
 

@@ -23,6 +23,7 @@ def sePuedeLlegar(origen: str, destino: str, vuelos: List[Tuple[str, str]]) -> i
     else:
       return vuelosNecesarios
 
+
 if __name__ == '__main__':
   origen = input()
   destino = input()

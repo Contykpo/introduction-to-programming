@@ -128,3 +128,27 @@ def es_primo(numero: int) -> bool:
 
 print("Es primo: "+str(es_primo(10)))
 print("Cantidad de primos hasta: "+str(cantidad_de_primos(10)))
+
+# Guia 5 - Ejercicio 5.6 - Descomponer elementos de una una lista de enteros en sus factores primos.
+
+def descomponer_en_primos(numeros: List[int]) -> List[List[int]]:
+    listaDeFactores: List[List[int]] = []
+    for numero in numeros:
+        if es_primo(numero) or (numero >= -1 and numero <= 1):
+            listaDeFactores.append(numero)
+        else:
+            listaDeFactores.append(obtener_factores(numero))
+    return listaDeFactores
+
+
+def obtener_factores(numero:int) -> List[int]:
+    factores: List[int] = []
+    posibleFactor: int = 2
+    while posibleFactor < numero:
+        if es_primo(posibleFactor) and (numero % posibleFactor == 0):
+            factores.append(posibleFactor)
+        posibleFactor += 1
+    return factores
+
+print(str(descomponer_en_primos([1,2,4,15,21,17])))
+

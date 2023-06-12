@@ -135,3 +135,46 @@ esPrimoAuxiliar :: Integer -> Integer -> Bool
 esPrimoAuxiliar entero divisor  | divisor > (div entero 2) = True
                                 | mod entero divisor == 0 = False
                                 | otherwise = esPrimoAuxiliar entero (divisor + 1)
+
+
+-- Guia 6 - Ejercicio 4 - Dado un valor y una lista del mismo tipo, devuelve la misma lista, pero sin los elementos del valor dado.
+
+quitarTodos :: (Eq t) => t -> [t] -> [t]
+quitarTodos _ [] = []
+quitarTodos posibleElemento (elemento : elementos)  | elemento == posibleElemento = quitarTodos posibleElemento elementos
+                                                    | otherwise = elemento : quitarTodos posibleElemento elementos
+
+-- Ejercicio Parcial - Dada una lista de enteros, retornar una tupla con una lista de aquellos elementos que no esten repetidos en la lista origina, y en el segun elemento,
+-- Una lista de tupas de enteros, donde el primer elmento es el entero repetido, y el segundo es la cantidad de apariciones en toda la lista.
+
+eliminarYContarRepetidos :: [Integer] -> ([Integer], [(Integer, Integer)])
+eliminarYContarRepetidos [] = ([],[])
+eliminarYContarRepetidos lista = (eliminarRepetidos lista, contarRepetidos lista)
+
+eliminarRepetidos :: [Integer] -> [Integer]
+eliminarRepetidos [] = []
+eliminarRepetidos (elemento : elementos)    | elemento `elem` elementos = eliminarRepetidos elementos
+                                            | otherwise = elemento : eliminarRepetidos elementos
+
+contarRepetidos :: [Integer] -> [(Integer, Integer)]
+contarRepetidos [] = []
+contarRepetidos (elemento : elementos)  | elemento `elem` elementos = (elemento, cantidadApariciones elemento elementos) : contarRepetidos (quitarTodos elemento elementos)
+                                        | otherwise = contarRepetidos elementos
+
+cantidadApariciones :: Integer -> [Integer] -> Integer
+cantidadApariciones _ [] = 0
+cantidadApariciones posibleElemen (elemento : elementos)    | elemento == posibleElemen = 1 + cantidadApariciones posibleElemen elementos
+                                                            | otherwise = cantidadApariciones posibleElemen elementos
+
+-- Otra implementacion de lo anterior:
+
+eliminarYContarRepetidos2 :: [Integer] -> ([Integer], [(Integer, Integer)])
+eliminarYContarRepetidos2 [elemento] = ([elemento], [])
+eliminarYContarRepetidos2 (elemento : elementos) | elemento `elem` listaSinRepetidos = (listaSinRepetidos, contarRepetidos2 elemento repeticiones)
+                                                    | otherwise = (elemento : listaSinRepetidos, repeticiones)
+                                                    where (listaSinRepetidos, repeticiones) = eliminarYContarRepetidos2 elementos
+
+contarRepetidos2 :: Integer -> [(Integer, Integer)] -> [(Integer, Integer)]
+contarRepetidos2 elemento [] = [(elemento, 1)]
+contarRepetidos2 elemento ((elementoActual, repeticiones) : elementos)  | elementoActual == elemento = (elementoActual, repeticiones + 1) : elementos
+                                                                        | otherwise = (elementoActual, repeticiones) : contarRepetidos2 elemento elementos

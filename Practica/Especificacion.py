@@ -1,4 +1,5 @@
 from typing import List
+from typing import Tuple
 
 # Guia 7 - Ejercicio 6.5 - Monitorear tiempo:
 
@@ -152,3 +153,32 @@ def obtener_factores(numero:int) -> List[int]:
 
 print(str(descomponer_en_primos([1,2,4,15,21,17])))
 
+# Guia 9 - Ejercicio 10 - Devolver maximo comun divisior entre dos enteros.
+
+def maximo_comun_divisior(entero1:int, entero2:int) -> int:
+    assert(entero1 >= 0 and entero2 >= 0)
+    temporary: int = 0
+    while entero2 != 0:
+        temporary = entero1 % entero2
+        entero1 = entero2
+        entero2 = temporary
+    return entero1
+
+print(str(maximo_comun_divisior(15,27)))
+
+# Ejercicio Parcial - Dada una lista de enteros, retornar una tupla con una lista de aquellos elementos que no esten repetidos en la lista origina, y en el segun elemento,
+# una lista de tupas de enteros, donde el primer elmento es el entero repetido, y el segundo es la cantidad de apariciones en toda la lista.
+
+def eliminar_y_contar_repetidos(lista: List[int]) -> Tuple[List[int],List[Tuple[int,int]]]:
+    listaSinRepetidos: List[int] = []
+    listaDeRepetidos: List[Tuple[int,int]] = []
+    for elemento in lista:
+        if not elemento in listaSinRepetidos:
+            cantidadDeRepetidos: int = lista.count(elemento)
+            if cantidadDeRepetidos > 1:
+                listaDeRepetidos.append((elemento, cantidadDeRepetidos - 1))
+            listaSinRepetidos.append(elemento)
+    return (listaSinRepetidos, listaDeRepetidos)
+
+
+print(str(eliminar_y_contar_repetidos([1,2,3,2,3,4,5,6,3])))

@@ -178,3 +178,19 @@ contarRepetidos2 :: Integer -> [(Integer, Integer)] -> [(Integer, Integer)]
 contarRepetidos2 elemento [] = [(elemento, 1)]
 contarRepetidos2 elemento ((elementoActual, repeticiones) : elementos)  | elementoActual == elemento = (elementoActual, repeticiones + 1) : elementos
                                                                         | otherwise = (elementoActual, repeticiones) : contarRepetidos2 elemento elementos
+
+-- CMS1 - Ejercicio 5 - Combinaciones menores o iguales.
+
+combinacionesMenoresOIguales :: Integer -> Integer
+combinacionesMenoresOIguales numero = sumatoriaExterna2 numero numero numero
+
+sumatoriaExterna2 :: Integer -> Integer -> Integer -> Integer
+sumatoriaExterna2 indiceE indiceI numero | indiceE == 1 = if indiceE * indiceI <= numero then 1 else 0
+                                        | otherwise = sumatoriaInterna2 indiceE indiceI numero + sumatoriaExterna2 (indiceE - 1) indiceI numero
+
+sumatoriaInterna2 :: Integer -> Integer -> Integer -> Integer
+sumatoriaInterna2 indiceE indiceI numero | indiceI == 1 = if indiceE * indiceI <= numero then 1 else 0
+                                        | indiceE * indiceI <= numero = 1 + sumatoriaInterna2 indiceE (indiceI - 1) numero
+                                        | otherwise = sumatoriaInterna2 indiceE (indiceI - 1) numero
+
+

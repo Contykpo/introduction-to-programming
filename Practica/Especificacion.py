@@ -182,3 +182,38 @@ def eliminar_y_contar_repetidos(lista: List[int]) -> Tuple[List[int],List[Tuple[
 
 
 print(str(eliminar_y_contar_repetidos([1,2,3,2,3,4,5,6,3])))
+
+# CM2 - Dada una matriz, retornar verdadero si sus filas mantienen un diferencia identica en cada columna.
+
+def filas_parecidas(matriz: List[List[int]]) -> bool:
+    if len(matriz) == 1:
+        return True
+    diferencia: int = matriz[1][0] - matriz[0][0]
+    for iteradorFila in range(1, len(matriz),1):
+        for iteradorColumna in range(0, len(matriz[iteradorFila]), 1):
+            if matriz[iteradorFila][iteradorColumna] != (matriz[iteradorFila - 1][iteradorColumna] + diferencia):
+                return False
+    return True
+
+print("Tiene filas parecidas: "+str(filas_parecidas([[1,2,3],[4,5,6]])))
+
+# CM2 - Ejercicio 5 - Se puede llegar.
+
+def se_puede_llegar(origen:str, destino:str, vuelos: List[Tuple[str,str]]) -> int:
+    vuelosValidos: List[Tuple[str,str]] = vuelos
+    ciudadActual: str = origen
+    vuelosTomados: int = 0
+    while ciudadActual != destino and len(vuelosValidos) > 0:
+        for vuelo in vuelosValidos:
+            if ciudadActual == vuelo[0]:
+                ciudadActual = vuelo[1]
+                vuelosTomados += 1
+                vuelosValidos.remove(vuelo)
+                break
+            if vuelosValidos.index(vuelo) == (len(vuelosValidos) - 1):
+                return -1
+    if ciudadActual != destino:
+        return -1
+    return vuelosTomados
+
+print("La ruta es: " + str(se_puede_llegar("BuenosAires","Toronto",[("BuenosAires","Utah"),("Utah","Toronto")])))

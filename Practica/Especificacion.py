@@ -217,3 +217,69 @@ def se_puede_llegar(origen:str, destino:str, vuelos: List[Tuple[str,str]]) -> in
     return vuelosTomados
 
 print("La ruta es: " + str(se_puede_llegar("BuenosAires","Toronto",[("BuenosAires","Utah"),("Utah","Toronto")])))
+
+# Armar triplas pitagoricas
+
+def armar_triplas_pitagoricas(lista: List[int]) -> List[Tuple[int,int,int]]:
+    lista.sort()
+    resultado: List[Tuple[int,int,int]] = []
+    for iterador in range(0,len(lista) - 2,1):
+        izquierda = iterador + 1
+        derecha = len(lista) - 1
+        while izquierda < derecha:
+            resultado.append((lista[iterador], lista[izquierda], lista[derecha]))
+            izquierda += 1
+            derecha -= 1
+    for tripla in resultado:
+        if tripla[0]**2 + tripla[1]**2 > tripla[2]**2:
+            resultado.remove(tripla)
+    return resultado
+
+def encontrar_mayor_igual(elemento: int, lista: List[int]) -> int:
+    for posibleMaximo in lista:
+        if posibleMaximo >= elemento:
+            return posibleMaximo
+    return elemento
+
+print(str(armar_triplas_pitagoricas([4,4,5,3,1])))
+
+# Calcular ganancia
+
+from copy import copy
+
+def calcular_ganancia(precios: List[Tuple[int,int]], presupuesto: int) -> int:
+    gananciaPosible: List[int] = []
+    for precio in precios:
+        gananciaInicial: int = 0
+        presupuestoTemporal: int = copy(presupuesto)
+        if precio[0] <= presupuestoTemporal:
+            presupuestoTemporal = presupuestoTemporal - precio[0]
+            gananciaInicial = precio[1] - precio[0]
+            ganaciasPosibles: List[int] = calcular_posibles_ganancias(precios,precio,gananciaInicial,presupuestoTemporal)
+            for ganancia in ganaciasPosibles:
+                gananciaPosible.append(ganancia)
+    print(str(gananciaPosible))
+    return maximo(gananciaPosible)
+
+def calcular_posibles_ganancias(precios: List[Tuple[int,int]], precio: Tuple[int,int],ganancia:int,presupuesto:int) -> List[int]:
+    resultado: List[int] = []
+    iterador:int = 0
+    while iterador < len(precios):
+        presupuestoTemporal:int = presupuesto
+        gananciasTotales:int = ganancia
+        for precioI in precios:
+            if precioI[0] <= presupuestoTemporal:
+                presupuestoTemporal -= precioI[0]
+                gananciasTotales += (precioI[1] - precioI[0])
+        resultado.append(gananciasTotales)
+        iterador += 1
+    return resultado
+def maximo(lista: List[int]) -> int:
+    maximoActual: int = 0
+    for elemento in lista:
+        if elemento > maximoActual:
+            maximoActual = elemento
+    return maximoActual
+
+
+print("La mayor ganancia es: "+str(calcular_ganancia([(10,11),(10,12),(17,19)],32)))

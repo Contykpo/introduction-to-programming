@@ -193,4 +193,74 @@ sumatoriaInterna2 indiceE indiceI numero | indiceI == 1 = if indiceE * indiceI <
                                         | indiceE * indiceI <= numero = 1 + sumatoriaInterna2 indiceE (indiceI - 1) numero
                                         | otherwise = sumatoriaInterna2 indiceE (indiceI - 1) numero
 
+-- Armar Triplas Pitagoricas
 
+armarTriplasPitagoricas :: [Integer] -> [(Integer,Integer,Integer)]
+armarTriplasPitagoricas lista = pitagoricas (componerTuplas lista)
+
+pitagoricas :: [(Integer,Integer,Integer)] -> [(Integer,Integer,Integer)]
+pitagoricas [] = []
+pitagoricas ((t0,t1,t2):elementos)  | t0 <= t1 && t1 <= t2 = if t0^2 + t1^2 == t2^2 then (t0,t1,t2) : pitagoricas elementos else pitagoricas elementos
+                                    | otherwise = pitagoricas elementos
+
+componerTuplas :: [Integer] -> [(Integer,Integer,Integer)]
+componerTuplas [] = []
+componerTuplas [e1] = []
+componerTuplas [e1,e2] = []
+componerTuplas (e0:e1:e2:e3:elementos)  | null elementos = componerElementosTupla (e0,e1,e2)
+                                        | otherwise = componerElementosTupla (e0,e1,e2) ++ componerTuplas lista
+                                        where lista = e1:e2:e3:elementos
+
+componerElementosTupla :: (Integer,Integer,Integer) -> [(Integer,Integer,Integer)]
+componerElementosTupla (e0,e1,e2) = [(e0,e1,e2)] ++ [(e0,e2,e1)] ++ [(e1,e0,e2)] ++ [(e1,e2,e0)] ++ [(e2,e0,e1)] ++ [(e2,e1,e0)]
+
+-- Calcular ganancia
+
+calcularGanancia :: [(Integer,Integer)] -> Integer -> Integer
+calcularGanancia [] _ = 0
+calcularGanancia ((compra,venta):precios) presupuesto   | null precios = if compra <= presupuesto then venta - compra else 0
+                                                        | otherwise = maximo (sumaGananciasPosibles listaPrecios presupuesto)
+                                                        where listaPrecios = (compra,venta): precios
+
+sumaGananciasPosibles :: [(Integer,Integer)] -> Integer -> [Integer]
+sumaGananciasPosibles ((compra,venta):precios) presupuesto  | null precios = if compra <= presupuesto then [venta - compra] else [0]
+                                                            | compra <= presupuesto = sumarGananciasDeComprasPosibles (sumaGananciasPosibles precios (presupuesto - compra)) (venta - compra) ++ sumaGananciasPosibles precios presupuesto
+                                                            | otherwise = sumaGananciasPosibles precios presupuesto
+
+sumarGananciasDeComprasPosibles :: [Integer] -> Integer -> [Integer]
+sumarGananciasDeComprasPosibles [] _ = []
+sumarGananciasDeComprasPosibles (gananciaActual : ganancias) ganancia = (ganancia + gananciaActual) : sumarGananciasDeComprasPosibles ganancias ganancia 
+
+maximo :: [Integer] -> Integer
+maximo [elemento] = elemento
+maximo (elemento1:elemento2:elementos)  | elemento1 > elemento2 = maximo (elemento1 : elementos)
+                                        | otherwise = maximo (elemento2 : elementos)
+
+-- Orden Lexografico
+
+modificar :: [Integer] -> [Integer] -> Integer
+modificar _ [] = 0
+modificar lista1 lista2 | length lista2 > length lista1 = 0
+                        | otherwise = distanciaManhattan lista1 (modificarLista lista1 lista2)
+
+distanciaManhattan :: [Integer] -> [Integer] -> Integer
+distanciaManhattan [elemento1] [elemento2] = abs(elemento1 - elemento2)
+distanciaManhattan (elemento1:elementos1) (elemento2:elementos2) = abs(elemento1 - elemento2) + distanciaManhattan elementos1 elementos2
+
+modificarLista :: [Integer] -> [Integer] -> [Integer]
+modificarLista lista1 lista2    | menorLex lista1 lista2 = lista1
+                                | otherwise = modificarListaAuxiliar lista1 lista2 []
+                                
+modificarListaAuxiliar :: [Integer] -> [Integer] -> [Integer] -> [Integer]
+modificarListaAuxiliar [] _  _ = []
+modificarListaAuxiliar _ []  _ = []
+modificarListaAuxiliar (elemento1Actual:elemento1Siguiente:elementos1) (elemento2Actual:elemento2Siguiente:elementos2) cabezal1 | elemento1Actual == elemento2Actual = if elemento1Siguiente < elemento2Siguiente then cabezal1 ++ (elemento1Actual:elemento1Siguiente:elementos1) else cabezal1 ++ (elemento1Actual:(elemento1Siguiente - (elemento1Siguiente-elemento2Siguiente-1)):elementos1)
+                                                                                                                                | otherwise = modificarListaAuxiliar (elemento1Siguiente:elementos1) (elemento2Siguiente:elementos2) (elemento1Actual : cabezal1)
+
+menorLex :: [Integer] -> [Integer] -> Bool
+menorLex (elemento1:elemento1Siguiente:elementos1) (elemento2:elemento2Siguiente:elementos2)    | elemento1 == elemento2 && ((length lista1 < length lista2) || (elemento1Siguiente < elemento2Siguiente)) = True
+                                                                                                | otherwise = menorLex (elemento1Siguiente:elementos1) (elemento2Siguiente:elementos2)
+                                                                                                where lista1 = elemento1:elemento1Siguiente:elementos1
+                                                                                                      lista2 = elemento2:elemento2Siguiente:elementos2
+
+-- Otro Ejercicio

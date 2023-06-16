@@ -136,7 +136,7 @@ def descomponer_en_primos(numeros: List[int]) -> List[List[int]]:
     listaDeFactores: List[List[int]] = []
     for numero in numeros:
         if es_primo(numero) or (numero >= -1 and numero <= 1):
-            listaDeFactores.append(numero)
+            listaDeFactores.append([numero])
         else:
             listaDeFactores.append(obtener_factores(numero))
     return listaDeFactores
@@ -283,3 +283,183 @@ def maximo(lista: List[int]) -> int:
 
 
 print("La mayor ganancia es: "+str(calcular_ganancia([(10,11),(10,12),(17,19)],32)))
+
+# CM3 - Ejercicio 1 - Polaca inversa:
+
+from queue import LifoQueue
+
+def calcular_expresion(expr:str) -> float:
+    expresion:List[str] = expr.split()
+    pila: LifoQueue[int] = LifoQueue(maxsize=len(expresion))
+    operadores: str = "/*+-"
+    for elemeneto in expresion:
+        if not elemeneto in operadores:
+            pila.put(float(elemeneto))
+        elif elemeneto != ' ':
+            operadoresDerechos = pila.get()
+            operadoresIzquierdos = pila.get()
+            if elemeneto == '+':
+                pila.put(operadoresIzquierdos + operadoresDerechos)
+            elif elemeneto == '-':
+                pila.put(operadoresIzquierdos - operadoresDerechos)
+            elif elemeneto == '*':
+                pila.put(operadoresIzquierdos * operadoresDerechos)
+            elif elemeneto == '/':
+                pila.put(int(operadoresIzquierdos / operadoresDerechos))
+    return pila.get()
+
+expresion1:str = "2 5 * 7 +"
+expresion2:str = "2 3.5 -"
+expresion3:str = "- 10"
+
+print(f"Expresion en notacion pocala + {expresion1}: {calcular_expresion(expresion1)}")
+
+# CM3 - Ejercicio 2 - Unir diccionarios:
+
+from typing import Dict
+
+def unir_diccionarios(a_unir: List[Dict[str,str]]) -> Dict[str,List[str]]:
+    resultado: Dict[str,str] = {}
+    for diccionario in a_unir:
+        listaValores: List[str] = []
+        for key in diccionario.keys():
+            if key in resultado.keys():
+                listaValores.append(diccionario.get(key))
+                for elemento in resultado.get(key):
+                    if elemento not in listaValores:
+                        listaValores.append(elemento)
+                resultado.update({key:listaValores[::-1]})
+            else:
+                resultado.update({key: diccionario.get(key)})
+    return resultado
+
+print(f"Unir diccionarios: {unir_diccionarios([{'a': '1', 'b': '2'}, {'b': '3', 'c': '4'}, {'a': '5'}])}")
+
+# CM3 - Ejercicio 3 - Procesamiento de pedidos:
+
+from typing import Union
+
+from queue import Queue
+
+def procesamiento_pedidos(pedidos: Queue,
+                          stock_productos: Dict[str, int],
+                          precios_productos: Dict[str, float]) -> List[Dict[str, Union[int, str, float, Dict[str, int]]]]:
+    resultado:List[Dict[str, Union[int, str, Dict[str, int]]]] = []
+    for iterador in range(0,pedidos.qsize(),1):
+        pedido: Dict[str, Union[int, str, Dict[str, int]]] = pedidos.get()
+        pedidoId:str = ""
+        pedidoCliente:str = ""
+        pedidoProductos: Dict[str,int] = {}
+        pedidoPrecioTotal: float = 0.0
+        pedidoEstado:str = ""
+        for key in pedido.keys():
+            if key == 'id':
+                pedidoId = pedido.get(key)
+            elif key == 'cliente':
+                pedidoCliente = pedido.get(key)
+            elif key == 'productos':
+                pedidoProductos = pedido.get(key)
+            if len(pedidoProductos) > 0:
+                for keyProducto in pedidoProductos.keys():
+                    if keyProducto in stock_productos.keys() and keyProducto in precios_productos.keys():
+                        stockProducto:int = stock_productos.get(keyProducto)
+                        precioProducto:float = precios_productos.get(keyProducto)
+                        cantidadProductos:int = pedidoProductos.get(keyProducto)
+                        if pedidoProductos.get(keyProducto) <= stockProducto:
+                            pedidoPrecioTotal += cantidadProductos * precioProducto
+                            stockProducto -= pedidoProductos.get(keyProducto)
+                            stock_productos.update({keyProducto:stockProducto})
+                            pedidoEstado = "completo"
+                        else:
+                            pedidoPrecioTotal += stockProducto * precioProducto
+                            pedidoProductos.update({keyProducto: stockProducto})
+                            stock_productos.update({keyProducto:0})
+                            pedidoEstado = "incompleto"
+        pedidoFinal: Dict[str, Union[int, str, Dict[str, int]]] = {
+            'id': pedidoId,
+            'cliente': pedidoCliente,
+            'productos': pedidoProductos,
+            'precio_total': pedidoPrecioTotal,
+            'estado': pedidoEstado}
+        resultado.append(pedidoFinal)
+    return resultado
+
+pedidos: Queue = Queue(maxsize=2)
+pedidos.put({"id":21,"cliente":"Gabriela", "productos":{"Manzana":2}})
+pedidos.put({"id":1,"cliente":"Juan","productos":{"Manzana":2,"Pan":4,"Factura":6}})
+stock_productos = {"Manzana":10, "Leche":5, "Pan":3, "Factura":0}
+precios_productos = {"Manzana":3.5, "Leche":5.5, "Pan":3.5, "Factura":5}
+
+print(str(procesamiento_pedidos(pedidos,stock_productos,precios_productos)))
+
+# CM3 - Ejercicio 4 - Fila del banco:
+
+def avanzarFila(fila: Queue, min: int):
+    cronometro_caja_1:int = 0
+    cronometro_caja_2: int = 0
+    cronometro_caja_3: int = 0
+    atendido3: int = 0
+    cronometro_atendido_3:int = 0
+    contadorMinutos: int = 0
+    while contadorMinutos <= min:
+        if contadorMinutos == 0:
+            fila.put(nueva_persona_n(fila))
+        if contadorMinutos > 0 and contadorMinutos % 4 == 0:
+            fila.put(nueva_persona_n(fila))
+        if contadorMinutos >= 1:
+            if cronometro_caja_1 == 0:
+                fila.get()
+                cronometro_caja_1 = 10
+            else:
+                cronometro_caja_1 -= 1
+        if contadorMinutos >= 2:
+            if cronometro_caja_3 == 0:
+                atendido3 = fila.get()
+                cronometro_caja_3 = 4
+                cronometro_atendido_3 = 3
+            else:
+                cronometro_caja_3 -= 1
+                cronometro_atendido_3 -= 1
+        if contadorMinutos >= 3:
+            if cronometro_caja_2 == 0:
+                fila.get()
+                cronometro_caja_2 = 4
+            else:
+                cronometro_caja_2 -= 1
+        if contadorMinutos >= 2 and cronometro_atendido_3 == 0:
+            fila.put(atendido3)
+        contadorMinutos += 1
+
+# Funcion auxiliar para determinar el entero que debe representar la nueva persona que se suma a la fila del banco cada 4 minutos.
+def nueva_persona_n(fila:Queue) -> int:
+    if fila.qsize() > 0:
+        personas: List[int] = []
+        for iterador in range(0, fila.qsize(), 1):
+            personas.append(fila.get())
+        maximoPersona: int = personas[0]
+        for persona in personas:
+            fila.put(persona)
+            if persona > maximoPersona:
+                maximoPersona = persona
+        return maximoPersona + 1
+    else:
+        return 1
+
+personas: Queue = Queue(maxsize=1000)
+personas.put(1)
+personas.put(2)
+personas.put(3)
+
+avanzarFila(personas,5)
+
+for iterado in range(0,personas.qsize(),1):
+    print(f"Persona: {personas.get()}")
+
+# Caja1: Empieza a atender 10:01, y atiende a una persona cada 10 minutos
+# Caja2: Empieza a atender 10:03, atiende a una persona cada 4 minutos
+# Caja3: Empieza a atender 10:02, y atiende una persona cada 4 minutos, pero no le resuelve el problema y la persona debe volver a la fila (se va al final y tarda 3 min en llegar. Es decir, la persona que fue atendida 10:02 vuelve a entrar a la fila a las 10:05)
+# La fila empieza con las n personas que llegaron antes de que abra el banco. Cuando abre (a las 10), cada 4 minutos llega una nueva persona a la fila (la primera entra a las 10:00)
+
+
+
+

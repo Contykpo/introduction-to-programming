@@ -170,9 +170,9 @@ cantidadApariciones posibleElemen (elemento : elementos)    | elemento == posibl
 
 eliminarYContarRepetidos2 :: [Integer] -> ([Integer], [(Integer, Integer)])
 eliminarYContarRepetidos2 [elemento] = ([elemento], [])
-eliminarYContarRepetidos2 (elemento : elementos) | elemento `elem` listaSinRepetidos = (listaSinRepetidos, contarRepetidos2 elemento repeticiones)
-                                                    | otherwise = (elemento : listaSinRepetidos, repeticiones)
-                                                    where (listaSinRepetidos, repeticiones) = eliminarYContarRepetidos2 elementos
+eliminarYContarRepetidos2 (elemento : elementos)      | elemento `elem` listaSinRepetidos = (listaSinRepetidos, contarRepetidos2 elemento repeticiones)
+                                                      | otherwise = (elemento : listaSinRepetidos, repeticiones)
+                                                      where (listaSinRepetidos, repeticiones) = eliminarYContarRepetidos2 elementos
 
 contarRepetidos2 :: Integer -> [(Integer, Integer)] -> [(Integer, Integer)]
 contarRepetidos2 elemento [] = [(elemento, 1)]

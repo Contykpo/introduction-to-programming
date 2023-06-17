@@ -371,6 +371,32 @@ def procesamiento_pedidos(pedidos: Queue[dict],
         resultado.append(pedidoFinal)
     return resultado
 
+def procesar_pedidos(pedidos: Queue[Dict[str, Union[int, str, Dict[str, int]]]],
+                     stock_productos: Dict[str, int],
+                     precios_productos: Dict[str, float]) -> List[Dict[str, Union[int, str, float, Dict[str, int]]]]:
+    pedidos_procesados = []
+    while not pedidos.empty():
+        pedido = pedidos.get()
+        pedido_procesado = {
+            'id': pedido['id'],
+            'cliente': pedido['cliente'],
+            'productos': {},
+            'precio_total': 0.0,
+            'estado': 'completo'
+        }
+        for producto, cantidad in pedido['productos'].items():
+            if producto not in stock_productos or stock_productos[producto] < cantidad:
+                pedido_procesado['estado'] = 'incompleto'
+                cantidad_disponible = stock_productos.get(producto, 0)
+                pedido_procesado['productos'][producto] = min(cantidad_disponible, cantidad)
+                pedido_procesado['precio_total'] += min(cantidad_disponible, cantidad) * precios_productos[producto]
+            else:
+                stock_productos[producto] -= cantidad
+                pedido_procesado['productos'][producto] = cantidad
+                pedido_procesado['precio_total'] += cantidad * precios_productos[producto]
+        pedidos_procesados.append(pedido_procesado)
+    return pedidos_procesados
+
 pedidos: Queue = Queue(maxsize=2)
 pedidos.put({"id":21,"cliente":"Gabriela", "productos":{"Manzana":2}})
 pedidos.put({"id":1,"cliente":"Juan","productos":{"Manzana":2,"Pan":4,"Factura":6}})

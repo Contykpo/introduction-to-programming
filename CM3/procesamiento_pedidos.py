@@ -9,45 +9,27 @@ import json
 def procesamiento_pedidos(pedidos: Queue,
                           stock_productos: Dict[str, int],
                           precios_productos: Dict[str, float]) -> List[Dict[str, Union[int, str, float, Dict[str, int]]]]:
-  resultado:List[Dict[str, Union[int, str, Dict[str, int]]]] = []
-  for iterador in range(0,pedidos.qsize(),1):
-      pedido: Dict[str, Union[int, str, Dict[str, int]]] = pedidos.get()
-      pedidoId:str = ""
-      pedidoCliente:str = ""
-      pedidoProductos: Dict[str,int] = {}
-      pedidoPrecioTotal: float = 0.0
-      pedidoEstado:str = ""
-      for key in pedido.keys():
-          if key == 'id':
-              pedidoId = pedido.get(key)
-          elif key == 'cliente':
-              pedidoCliente = pedido.get(key)
-          elif key == 'productos':
-              pedidoProductos = pedido.get(key)
-          if len(pedidoProductos) > 0:
-              for keyProducto in pedidoProductos.keys():
-                  if keyProducto in stock_productos.keys() and keyProducto in precios_productos.keys():
-                      stockProducto:int = stock_productos.get(keyProducto)
-                      precioProducto:float = precios_productos.get(keyProducto)
-                      cantidadProductos:int = pedidoProductos.get(keyProducto)
-                      if pedidoProductos.get(keyProducto) <= stockProducto:
-                          pedidoPrecioTotal += cantidadProductos * precioProducto
-                          stockProducto -= pedidoProductos.get(keyProducto)
-                          stock_productos.update({keyProducto:stockProducto})
-                          pedidoEstado = "completo"
-                      else:
-                          pedidoPrecioTotal += stockProducto * precioProducto
-                          pedidoProductos.update({keyProducto: stockProducto})
-                          stock_productos.update({keyProducto:0})
-                          pedidoEstado = "incompleto"
-      pedidoFinal: Dict[str, Union[int, str, Dict[str, int]]] = {
-          'id': pedidoId,
-          'cliente': pedidoCliente,
-          'productos': pedidoProductos,
-          'precio_total': pedidoPrecioTotal,
-          'estado': pedidoEstado}
-      resultado.append(pedidoFinal)
-  return resultado
+    resultado = []
+    while not pedidos.empty():
+        pedido = pedidos.get()
+        pedidoFinal = {
+            "id": pedido["id"],
+            "cliente": pedido["cliente"],
+            "productos": {},
+            "precio_total": 0.0,
+            "estado": "completo"}
+        for producto, cantidad in pedido["productos"].items():
+            if producto not in stock_productos or stock_productos[producto] < cantidad:
+                pedidoFinal["estado"] = "incompleto"
+                cantidad_disponible = stock_productos.get(producto)
+                pedidoFinal["productos"][producto] = min(cantidad_disponible, cantidad)
+                pedidoFinal["precio_total"] += min(cantidad_disponible, cantidad) * precios_productos[producto]
+            else:
+                stock_productos[producto] -= cantidad
+                pedidoFinal["productos"][producto] = cantidad
+                pedidoFinal["precio_total"] += cantidad * precios_productos[producto]
+        resultado.append(pedidoFinal)
+    return resultado
 
 
 if __name__ == '__main__':
@@ -57,6 +39,7 @@ if __name__ == '__main__':
   stock_productos = json.loads(input())
   precios_productos = json.loads(input())
   print("{} {}".format(procesamiento_pedidos(pedidos, stock_productos, precios_productos), stock_productos))
+
 
 # Ejemplo input  
 # pedidos: [{"id":21,"cliente":"Gabriela", "productos":{"Manzana":2}}, {"id":1,"cliente":"Juan","productos":{"Manzana":2,"Pan":4,"Factura":6}}]

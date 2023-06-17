@@ -3,20 +3,16 @@ from typing import Dict
 import json
 
 def unir_diccionarios(a_unir: List[Dict[str,str]]) -> Dict[str,List[str]]:
-  resultado: Dict[str, str] = {}
+  resultado: Dict[str,List[str]] = {}
   for diccionario in a_unir:
-    listaValores: List[str] = []
-    for key in diccionario.keys():
-      if key in resultado.keys():
-        listaValores.append(diccionario.get(key))
-        for elemento in resultado.get(key):
-          if elemento not in listaValores:
-            listaValores.append(elemento)
-        resultado.update({key: listaValores[::-1]})
+    for clave, valor in diccionario.items():
+      if clave not in resultado:
+        resultado[clave] = [valor]
       else:
-        resultado.update({key: diccionario.get(key)})
+        resultado[clave].append(valor)
   return resultado
 
+[{"a":2},{"b":8,"a":5},{"a":7},{"b":3,"a":1},{"c":11,"a":9,"b":1}]
 
 if __name__ == '__main__':
   x = json.loads(input()) # Ejemplo de input: [{"a":2},{"b":3,"a":1}]

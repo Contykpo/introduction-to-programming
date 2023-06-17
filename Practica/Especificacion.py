@@ -341,46 +341,33 @@ from typing import Union
 
 from queue import Queue
 
-def procesamiento_pedidos(pedidos: Queue,
+def procesamiento_pedidos(pedidos: Queue[dict],
                           stock_productos: Dict[str, int],
                           precios_productos: Dict[str, float]) -> List[Dict[str, Union[int, str, float, Dict[str, int]]]]:
-    resultado:List[Dict[str, Union[int, str, Dict[str, int]]]] = []
-    for iterador in range(0,pedidos.qsize(),1):
-        pedido: Dict[str, Union[int, str, Dict[str, int]]] = pedidos.get()
-        pedidoId:str = ""
-        pedidoCliente:str = ""
-        pedidoProductos: Dict[str,int] = {}
+    resultado: List[dict] = []
+    while not pedidos.empty():
+        pedido = pedidos.get()
+        pedidoId = pedido.get("id")
+        pedidoCliente = pedido.get("cliente")
+        pedidoProductos = pedido.get("productos")
         pedidoPrecioTotal: float = 0.0
-        pedidoEstado:str = ""
-        for key in pedido.keys():
-            if key == 'id':
-                pedidoId = pedido.get(key)
-            elif key == 'cliente':
-                pedidoCliente = pedido.get(key)
-            elif key == 'productos':
-                pedidoProductos = pedido.get(key)
-            if len(pedidoProductos) > 0:
-                for keyProducto in pedidoProductos.keys():
-                    if keyProducto in stock_productos.keys() and keyProducto in precios_productos.keys():
-                        stockProducto:int = stock_productos.get(keyProducto)
-                        precioProducto:float = precios_productos.get(keyProducto)
-                        cantidadProductos:int = pedidoProductos.get(keyProducto)
-                        if pedidoProductos.get(keyProducto) <= stockProducto:
-                            pedidoPrecioTotal += cantidadProductos * precioProducto
-                            stockProducto -= pedidoProductos.get(keyProducto)
-                            stock_productos.update({keyProducto:stockProducto})
-                            pedidoEstado = "completo"
-                        else:
-                            pedidoPrecioTotal += stockProducto * precioProducto
-                            pedidoProductos.update({keyProducto: stockProducto})
-                            stock_productos.update({keyProducto:0})
-                            pedidoEstado = "incompleto"
-        pedidoFinal: Dict[str, Union[int, str, Dict[str, int]]] = {
-            'id': pedidoId,
-            'cliente': pedidoCliente,
-            'productos': pedidoProductos,
-            'precio_total': pedidoPrecioTotal,
-            'estado': pedidoEstado}
+        pedidoEstado: str = ""
+        for keyProducto in pedidoProductos.keys():
+            if keyProducto in stock_productos.keys() and keyProducto in precios_productos.keys():
+                stockProducto:int = stock_productos.get(keyProducto)
+                precioProducto:float = precios_productos.get(keyProducto)
+                cantidadProductos:int = pedidoProductos.get(keyProducto)
+                if pedidoProductos.get(keyProducto) <= stockProducto:
+                    pedidoPrecioTotal += cantidadProductos * precioProducto
+                    stockProducto -= pedidoProductos.get(keyProducto)
+                    stock_productos.update({keyProducto:stockProducto})
+                    pedidoEstado = "completo"
+                else:
+                    pedidoPrecioTotal += stockProducto * precioProducto
+                    pedidoProductos.update({keyProducto: stockProducto})
+                    stock_productos.update({keyProducto:0})
+                    pedidoEstado = "incompleto"
+        pedidoFinal = {"id": pedidoId, "cliente": pedidoCliente, "productos": pedidoProductos, "precio_total": pedidoPrecioTotal, "estado": pedidoEstado}
         resultado.append(pedidoFinal)
     return resultado
 
@@ -395,55 +382,76 @@ print(str(procesamiento_pedidos(pedidos,stock_productos,precios_productos)))
 # CM3 - Ejercicio 4 - Fila del banco:
 
 def avanzarFila(fila: Queue, min: int):
-    cronometro_caja_1:int = 0
-    cronometro_caja_2: int = 0
-    cronometro_caja_3: int = 0
-    atendido3: int = 0
-    cronometro_atendido_3:int = 0
-    contadorMinutos: int = 0
-    while contadorMinutos <= min:
-        if contadorMinutos == 0:
-            fila.put(nueva_persona_n(fila))
-        if contadorMinutos > 0 and contadorMinutos % 4 == 0:
-            fila.put(nueva_persona_n(fila))
-        if contadorMinutos >= 1:
-            if cronometro_caja_1 == 0:
-                fila.get()
-                cronometro_caja_1 = 10
-            else:
-                cronometro_caja_1 -= 1
-        if contadorMinutos >= 2:
-            if cronometro_caja_3 == 0:
-                atendido3 = fila.get()
-                cronometro_caja_3 = 4
-                cronometro_atendido_3 = 3
-            else:
-                cronometro_caja_3 -= 1
-                cronometro_atendido_3 -= 1
-        if contadorMinutos >= 3:
-            if cronometro_caja_2 == 0:
-                fila.get()
-                cronometro_caja_2 = 4
-            else:
-                cronometro_caja_2 -= 1
-        if contadorMinutos >= 2 and cronometro_atendido_3 == 0:
-            fila.put(atendido3)
-        contadorMinutos += 1
+  cronometro_caja_1: int = 0
+  cronometro_caja_2: int = 0
+  cronometro_caja_3: int = 0
+  cronometro_atendido_3: int = 0
+  atendido1: int = 0
+  atendido2: int = 0
+  atendido3: int = 0
+  atendidos: [int] = []
+  contadorMinutos: int = 0
+  while contadorMinutos <= min:
+    if contadorMinutos % 4 == 0:
+      fila.put(nueva_persona_n(fila,atendidos))
+    # Caja 1
+    if contadorMinutos >= 1 and not fila.empty():
+      if cronometro_caja_1 == 0:
+        if atendido1 in atendidos:
+          atendidos.remove(atendido1)
+        atendido1 = fila.get()
+        atendidos.append(atendido1)
+        cronometro_caja_1 = 10
+      else:
+        cronometro_caja_1 -= 1
+    # Caja 2
+    if contadorMinutos >= 3 and not fila.empty():
+      if cronometro_caja_2 == 0:
+        if atendido2 in atendidos:
+          atendidos.remove(atendido2)
+        atendido2 = fila.get()
+        atendidos.append(atendido2)
+        cronometro_caja_2 = 4
+      else:
+        cronometro_caja_2 -= 1
+    # Caja 3
+    if contadorMinutos >= 2 and not fila.empty():
+      if cronometro_caja_3 == 0:
+        atendido3 = fila.get()
+        atendidos.append(atendido3)
+        cronometro_caja_3 = 4
+        cronometro_atendido_3 = 3
+      else:
+        cronometro_caja_3 -= 1
+        cronometro_atendido_3 -= 1
+    if contadorMinutos >= 2 and cronometro_atendido_3 == 0 and atendido3 in atendidos:
+      fila.put(atendido3)
+      atendidos.remove(atendido3)
+      atendido3 = 0
+    contadorMinutos += 1
+
 
 # Funcion auxiliar para determinar el entero que debe representar la nueva persona que se suma a la fila del banco cada 4 minutos.
-def nueva_persona_n(fila:Queue) -> int:
-    if fila.qsize() > 0:
-        personas: List[int] = []
-        for iterador in range(0, fila.qsize(), 1):
-            personas.append(fila.get())
-        maximoPersona: int = personas[0]
-        for persona in personas:
-            fila.put(persona)
-            if persona > maximoPersona:
-                maximoPersona = persona
-        return maximoPersona + 1
-    else:
-        return 1
+def nueva_persona_n(fila: Queue, atendidos: [int]) -> int:
+  if fila.qsize() > 0:
+    personas: [int] = []
+    for iterador in range(0, fila.qsize(), 1):
+      personas.append(fila.get())
+    maximoPersona: int = personas[0]
+    for persona in personas:
+      fila.put(persona)
+      if persona > maximoPersona:
+        maximoPersona = persona
+    return maximoPersona + 1
+  elif len(atendidos) > 0:
+    maximoAtendido: int = atendidos[0]
+    for atendido in atendidos:
+      if atendido > maximoAtendido:
+        maximoAtendido = atendido
+    return maximoAtendido + 1
+  else:
+    return 1
+
 
 personas: Queue = Queue(maxsize=1000)
 personas.put(1)

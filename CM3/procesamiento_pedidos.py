@@ -25,6 +25,7 @@ def procesamiento_pedidos(pedidos: Queue,
         cantidad_disponible = stock_productos.get(producto)
         pedidoFinal["productos"][producto] = min(cantidad_disponible, cantidad)
         pedidoFinal["precio_total"] += min(cantidad_disponible, cantidad) * precios_productos[producto]
+        stock_productos[producto] -= min(cantidad_disponible, cantidad)
       else:
         stock_productos[producto] -= cantidad
         pedidoFinal["productos"][producto] = cantidad

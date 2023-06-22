@@ -9,27 +9,28 @@ import json
 def procesamiento_pedidos(pedidos: Queue,
                           stock_productos: Dict[str, int],
                           precios_productos: Dict[str, float]) -> List[Dict[str, Union[int, str, float, Dict[str, int]]]]:
-    resultado = []
-    while not pedidos.empty():
-        pedido = pedidos.get()
-        pedidoFinal = {
-            "id": pedido["id"],
-            "cliente": pedido["cliente"],
-            "productos": {},
-            "precio_total": 0.0,
-            "estado": "completo"}
-        for producto, cantidad in pedido["productos"].items():
-            if producto not in stock_productos or stock_productos[producto] < cantidad:
-                pedidoFinal["estado"] = "incompleto"
-                cantidad_disponible = stock_productos.get(producto)
-                pedidoFinal["productos"][producto] = min(cantidad_disponible, cantidad)
-                pedidoFinal["precio_total"] += min(cantidad_disponible, cantidad) * precios_productos[producto]
-            else:
-                stock_productos[producto] -= cantidad
-                pedidoFinal["productos"][producto] = cantidad
-                pedidoFinal["precio_total"] += cantidad * precios_productos[producto]
-        resultado.append(pedidoFinal)
-    return resultado
+  resultado = []
+  while not pedidos.empty():
+    pedido = pedidos.get()
+    pedidoFinal = {
+      "id": pedido["id"],
+      "cliente": pedido["cliente"],
+      "productos": {},
+      "precio_total": 0.0,
+      "estado": "completo"
+    }
+    for producto, cantidad in pedido["productos"].items():
+      if producto not in stock_productos or stock_productos[producto] < cantidad:
+        pedidoFinal["estado"] = "incompleto"
+        cantidad_disponible = stock_productos.get(producto)
+        pedidoFinal["productos"][producto] = min(cantidad_disponible, cantidad)
+        pedidoFinal["precio_total"] += min(cantidad_disponible, cantidad) * precios_productos[producto]
+      else:
+        stock_productos[producto] -= cantidad
+        pedidoFinal["productos"][producto] = cantidad
+        pedidoFinal["precio_total"] += cantidad * precios_productos[producto]
+    resultado.append(pedidoFinal)
+  return resultado
 
 
 if __name__ == '__main__':

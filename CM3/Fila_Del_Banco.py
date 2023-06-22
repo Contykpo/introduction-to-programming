@@ -3,10 +3,6 @@ from queue import Queue
 
 # El tipo de fila debería ser Queue[int], pero la versión de python del CMS no lo soporta. Usaremos en su lugar simplemente "Queue"
 def avanzarFila(fila: Queue, min: int):
-  cronometro_caja_1: int = 0
-  cronometro_caja_2: int = 0
-  cronometro_caja_3: int = 0
-  cronometro_atendido_3: int = 0
   atendido1: int = 0
   atendido2: int = 0
   atendido3: int = 0
@@ -16,36 +12,22 @@ def avanzarFila(fila: Queue, min: int):
     if contadorMinutos % 4 == 0:
       fila.put(nueva_persona_n(fila,atendidos))
     # Caja 1
-    if contadorMinutos >= 1 and not fila.empty():
-      if cronometro_caja_1 == 0:
-        if atendido1 in atendidos:
-          atendidos.remove(atendido1)
-        atendido1 = fila.get()
-        atendidos.append(atendido1)
-        cronometro_caja_1 = 10
-      else:
-        cronometro_caja_1 -= 1
+    if contadorMinutos % 10 == 1 and not fila.empty():
+      if atendido1 in atendidos:
+        atendidos.remove(atendido1)
+      atendido1 = fila.get()
+      atendidos.append(atendido1)
     # Caja 2
-    if contadorMinutos >= 3 and not fila.empty():
-      if cronometro_caja_2 == 0:
-        if atendido2 in atendidos:
-          atendidos.remove(atendido2)
-        atendido2 = fila.get()
-        atendidos.append(atendido2)
-        cronometro_caja_2 = 4
-      else:
-        cronometro_caja_2 -= 1
+    if contadorMinutos % 4 == 3 and not fila.empty():
+      if atendido2 in atendidos:
+        atendidos.remove(atendido2)
+      atendido2 = fila.get()
+      atendidos.append(atendido2)
     # Caja 3
-    if contadorMinutos >= 2 and not fila.empty():
-      if cronometro_caja_3 == 0:
-        atendido3 = fila.get()
-        atendidos.append(atendido3)
-        cronometro_caja_3 = 4
-        cronometro_atendido_3 = 3
-      else:
-        cronometro_caja_3 -= 1
-        cronometro_atendido_3 -= 1
-    if contadorMinutos >= 2 and cronometro_atendido_3 == 0 and atendido3 in atendidos:
+    if contadorMinutos % 4 == 2 and not fila.empty():
+      atendido3 = fila.get()
+      atendidos.append(atendido3)
+    if contadorMinutos >= 2 and contadorMinutos % 4 == 1 and atendido3 in atendidos:
       fila.put(atendido3)
       atendidos.remove(atendido3)
       atendido3 = 0

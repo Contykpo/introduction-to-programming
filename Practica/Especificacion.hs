@@ -264,3 +264,17 @@ menorLex (elemento1:elemento1Siguiente:elementos1) (elemento2:elemento2Siguiente
                                                                                                       lista2 = elemento2:elemento2Siguiente:elementos2
 
 -- Otro Ejercicio
+
+decodificar :: [(Char, Char)] -> [Char] -> [Char]
+decodificar [] mensaje = mensaje
+decodificar _ [] = []
+decodificar ((codigo, significado) : reglas) (simbolo : simbolos) | simbolo == codigo = significado : decodificar reglasCodificado simbolos
+                                                                  | otherwise = (obtenerSignificado reglas simbolo) : decodificar reglasCodificado simbolos
+                                                                  where reglasCodificado = (codigo, significado) : reglas
+
+obtenerSignificado :: [(Char,Char)] -> Char -> Char
+obtenerSignificado [] simbolo = simbolo
+obtenerSignificado ((codigo, significado) : reglas) simbolo | simbolo == codigo = significado
+                                                            | otherwise = obtenerSignificado reglas simbolo
+
+pruebaDecodificar = decodificar [('a', 'h'),('b', 'o'),('x', 'y'),('c','l'),('d','a')] ['a','b','c','d']

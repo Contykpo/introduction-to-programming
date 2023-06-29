@@ -495,5 +495,25 @@ for iterado in range(0,personas.qsize(),1):
 # La fila empieza con las n personas que llegaron antes de que abra el banco. Cuando abre (a las 10), cada 4 minutos llega una nueva persona a la fila (la primera entra a las 10:00)
 
 
+# Parcial 2023 - Ejercicio 2 - Decodificar.
+
+def decodificar(reglas_codificado: List[Tuple[str,str]], mensaje_codificado: str) -> str:
+    mensaje_decodificado: str = ""
+    codigos_y_reglas: Tuple[List[str],List[str]] = ([],[])
+    for codigo, significado in reglas_codificado:
+        codigos_y_reglas[0].append(codigo)
+        codigos_y_reglas[1].append(significado)
+    for simbolo in mensaje_codificado:
+        for codiguito in codigos_y_reglas[0]:
+            if codiguito == simbolo:
+                mensaje_decodificado += codigos_y_reglas[1][codigos_y_reglas[0].index(codiguito)]
+                pass
+    return mensaje_decodificado
+
+
+print(decodificar([("a", "h"),("b", "o"),("x", "y"),("c","l"),("d","a")], "abcd"))
+
+
+
 
 

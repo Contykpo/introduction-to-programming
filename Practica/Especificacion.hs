@@ -234,7 +234,8 @@ sumarGananciasDeComprasPosibles (gananciaActual : ganancias) ganancia = (gananci
 maximo :: [Integer] -> Integer
 maximo [elemento] = elemento
 maximo (elemento1:elemento2:elementos)  | elemento1 > elemento2 = maximo (elemento1 : elementos)
-                                        | otherwise = maximo (elemento2 : elementos)
+                                        | otherwise = maximo (elemento2 : elementos) 
+
 
 -- Orden Lexografico
 
@@ -250,7 +251,7 @@ distanciaManhattan (elemento1:elementos1) (elemento2:elementos2) = abs(elemento1
 modificarLista :: [Integer] -> [Integer] -> [Integer]
 modificarLista lista1 lista2    | menorLex lista1 lista2 = lista1
                                 | otherwise = modificarListaAuxiliar lista1 lista2 []
-                                
+
 modificarListaAuxiliar :: [Integer] -> [Integer] -> [Integer] -> [Integer]
 modificarListaAuxiliar [] _  _ = []
 modificarListaAuxiliar _ []  _ = []
@@ -263,7 +264,7 @@ menorLex (elemento1:elemento1Siguiente:elementos1) (elemento2:elemento2Siguiente
                                                                                                 where lista1 = elemento1:elemento1Siguiente:elementos1
                                                                                                       lista2 = elemento2:elemento2Siguiente:elementos2
 
--- Otro Ejercicio
+-- Parcial 2023 - Ejercicio 2 - Decodificar.
 
 decodificar :: [(Char, Char)] -> [Char] -> [Char]
 decodificar [] mensaje = mensaje
@@ -278,3 +279,87 @@ obtenerSignificado ((codigo, significado) : reglas) simbolo | simbolo == codigo 
                                                             | otherwise = obtenerSignificado reglas simbolo
 
 pruebaDecodificar = decodificar [('a', 'h'),('b', 'o'),('x', 'y'),('c','l'),('d','a')] ['a','b','c','d']
+
+
+-- Parcial 2023 Simulacro - Ejercicio 2 - Elimniar y contar repetidos.
+
+eliminarYContarRepetidos3 :: [Integer] -> ([Integer],[(Integer,Integer)])
+eliminarYContarRepetidos3 [] = ([],[])
+eliminarYContarRepetidos3 [elemento] = ([elemento],[])
+eliminarYContarRepetidos3 (elemento : elementos)      | elemento `elem` listaSinRepetidos = (listaSinRepetidos, contarRepeticiones elemento repeticiones)
+                                                      | otherwise = (elemento : listaSinRepetidos, repeticiones)
+                                                      where (listaSinRepetidos, repeticiones) = eliminarYContarRepetidos3 elementos
+
+contarRepeticiones :: Integer -> [(Integer,Integer)] -> [(Integer,Integer)]
+contarRepeticiones elemento [] = [(elemento,1)]
+contarRepeticiones elemento ((elementoRepetido, repeticiones) : otrasRepeticiones)  | elementoRepetido == elemento = (elementoRepetido, repeticiones + 1) : otrasRepeticiones
+                                                                                    | otherwise = (elementoRepetido, repeticiones) : contarRepeticiones elemento otrasRepeticiones
+
+pruebaEliminarRepeticiones = eliminarYContarRepetidos3 [1,2,3,4,5,1,2,4,5,6,7,8,9,10]
+
+
+-- Ejercicio de parcial - Maxima ganancia entre compras posibles.
+
+calcularMaximaGanancia :: [(Integer, Integer)] -> Integer -> Integer
+calcularMaximaGanancia [] _ = 0
+calcularMaximaGanancia ((compra,venta): precios) presupuesto      | null precios = if compra <= presupuesto then venta - compra else 0
+                                                                  | otherwise = maximo (sumaGananciasPosibles2 listadoPrecios presupuesto ++ sumaGananciasCompraRepetida listadoPrecios presupuesto)
+                                                                  where listadoPrecios = (compra,venta) : precios
+
+sumaGananciasPosibles2 :: [(Integer,Integer)] -> Integer -> [Integer]
+sumaGananciasPosibles2 ((compra,venta): precios) presupuesto      | null precios = if compra <= presupuesto then [venta - compra] else [0]
+                                                                  | compra <= presupuesto = sumaGananciasPorCompraPosibles (sumaGananciasPosibles2 precios (presupuesto - compra)) (venta-compra) ++ sumaGananciasPosibles2 precios presupuesto
+                                                                  | otherwise = sumaGananciasPosibles precios presupuesto
+
+sumaGananciasPorCompraPosibles :: [Integer] -> Integer -> [Integer]
+sumaGananciasPorCompraPosibles [] _ = []
+sumaGananciasPorCompraPosibles (gananciaActual : ganancias) nuevaGanancia = (gananciaActual + nuevaGanancia) : sumaGananciasPorCompraPosibles ganancias nuevaGanancia
+
+sumaGananciasCompraRepetida :: [(Integer,Integer)] -> Integer -> [Integer]
+sumaGananciasCompraRepetida ((compra, venta):precios) presupuesto | null precios = if compra <= presupuesto then [(venta-compra)* div presupuesto compra] else [0]
+                                                                  | compra <= presupuesto = ((venta-compra) * div presupuesto compra) : sumaGananciasCompraRepetida precios presupuesto
+                                                                  | otherwise = sumaGananciasCompraRepetida precios presupuesto
+
+maximo2 :: [Integer] -> Integer
+maximo2 [elemento] = elemento
+maximo2 (elemento:segundoElemento:elementos)    | elemento > segundoElemento = maximo2 (elemento : elementos)
+                                                | otherwise = maximo2 (segundoElemento : elementos)
+
+pruebaCalcularMaximaGanancia = calcularMaximaGanancia [(10,11),(10,11),(9,13)] 33
+
+
+-- Ejercicio crear una funcion que invierte el orden de los elementos de una lista
+
+invertirListado :: [a] -> [a] 
+invertirListado [] = [] 
+invertirListado (elemento:elementos) = invertirListado elementos ++ [elemento]
+
+-- Guia 5 - Ejercicio 5.6 - Descomponer en primos:
+
+descomponerEnFactoresPrimos :: [Integer] -> [[Integer]]
+descomponerEnFactoresPrimos [] = []
+descomponerEnFactoresPrimos (numero : numeros)  | numero == 1 || numero == 0 = [numero] : descomponerEnFactoresPrimos numeros
+                                                | esPrimo2 numero = [numero] : descomponerEnFactoresPrimos numeros
+                                                | otherwise = obtenerFactoresPrimos numero 2 : descomponerEnFactoresPrimos numeros
+
+obtenerFactoresPrimos :: Integer -> Integer -> [Integer]
+obtenerFactoresPrimos numero factor | factor > numero = []
+                                    | esPrimo2 factor  && (mod numero factor == 0) && mod (div numero factor) factor == 0 = obtenerFactoresMultiples numero factor ++ obtenerFactoresPrimos numero (factor+1)
+                                    | esPrimo2 factor && (mod numero factor == 0) = factor : obtenerFactoresPrimos numero (factor+1)
+                                    | otherwise = obtenerFactoresPrimos numero (factor+1)
+
+obtenerFactoresMultiples :: Integer -> Integer -> [Integer]
+obtenerFactoresMultiples numero factor    | mod numero factor == 0 = factor : obtenerFactoresMultiples (div numero factor) factor
+                                          | otherwise = []
+
+esPrimo2 :: Integer -> Bool
+esPrimo2 numero   | numero == 1 = False
+                  | numero == 2 = True
+                  | otherwise = esPrimoAuxiliar numero 2
+
+esPrimo2Auxiliar :: Integer -> Integer -> Bool
+esPrimo2Auxiliar numero divisor     | divisor > div numero 2 = True
+                                    | mod numero divisor == 0 = False
+                                    | otherwise = esPrimo2Auxiliar numero (divisor+1)
+
+pruebaDescomponerEnFactoresPrimos = descomponerEnFactoresPrimos [4,3,5,6,7,1,0,10,13,81]

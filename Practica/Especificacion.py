@@ -249,29 +249,34 @@ from copy import copy
 
 def calcular_ganancia(precios: List[Tuple[int,int]], presupuesto: int) -> int:
     gananciaPosible: List[int] = []
-    for precio in precios:
+    for compra, venta in precios:
         gananciaInicial: int = 0
         presupuestoTemporal: int = copy(presupuesto)
-        if precio[0] <= presupuestoTemporal:
-            presupuestoTemporal = presupuestoTemporal - precio[0]
-            gananciaInicial = precio[1] - precio[0]
-            ganaciasPosibles: List[int] = calcular_posibles_ganancias(precios,precio,gananciaInicial,presupuestoTemporal)
+        if compra <= presupuestoTemporal:
+            presupuestoTemporal = presupuestoTemporal - compra
+            gananciaInicial = venta - compra
+            ganaciasPosibles: List[int] = calcular_posibles_ganancias(precios,(compra,venta),gananciaInicial,presupuestoTemporal)
             for ganancia in ganaciasPosibles:
                 gananciaPosible.append(ganancia)
-    print(str(gananciaPosible))
+        gananciaPosible.append((venta - compra) * (presupuesto // compra))
+    print(f"Las ganancias posibles son: {gananciaPosible}")
     return maximo(gananciaPosible)
 
 def calcular_posibles_ganancias(precios: List[Tuple[int,int]], precio: Tuple[int,int],ganancia:int,presupuesto:int) -> List[int]:
     resultado: List[int] = []
-    iterador:int = 0
-    while iterador < len(precios):
+    iterador: int = 0
+    posiblesCompras: List[Tuple[int,int]] = []
+    for producto in precios:
+        posiblesCompras.append(producto)
+    while iterador < len(precio):
         presupuestoTemporal:int = presupuesto
         gananciasTotales:int = ganancia
-        for precioI in precios:
-            if precioI[0] <= presupuestoTemporal:
-                presupuestoTemporal -= precioI[0]
-                gananciasTotales += (precioI[1] - precioI[0])
-        resultado.append(gananciasTotales)
+        for compra, venta in posiblesCompras:
+            if compra <= presupuestoTemporal:
+                presupuestoTemporal -= compra
+                gananciasTotales += (venta - compra)
+            else:
+                resultado.append(gananciasTotales)
         iterador += 1
     return resultado
 def maximo(lista: List[int]) -> int:
@@ -282,7 +287,7 @@ def maximo(lista: List[int]) -> int:
     return maximoActual
 
 
-print("La mayor ganancia es: "+str(calcular_ganancia([(10,11),(10,12),(17,19)],32)))
+print("La mayor ganancia es: "+str(calcular_ganancia([(10,11),(10,12),(9,13)],32)))
 
 # CM3 - Ejercicio 1 - Polaca inversa:
 
@@ -308,32 +313,48 @@ def calcular_expresion(expr:str) -> float:
                 pila.put(int(operadoresIzquierdos / operadoresDerechos))
     return pila.get()
 
+def calcular_expresion_polaca(expresion:str) -> float:
+    expresion: List[str] = expresion.split()
+    pila: LifoQueue[int] = LifoQueue(maxsize=2*len(expresion))
+    operadores: str = "/*+-"
+    for character in expresion:
+        if character not in operadores:
+            pila.put(float(character))
+        elif character != ' ':
+            operadoresDerechos = pila.get()
+            operadoresIzquierdos = pila.get()
+            if character == '+':
+                pila.put(operadoresIzquierdos + operadoresDerechos)
+            elif character == '-':
+                pila.put(operadoresIzquierdos - operadoresDerechos)
+            elif character == '/':
+                pila.put(int(operadoresIzquierdos / operadoresDerechos))
+            elif character == '*':
+                pila.put(operadoresIzquierdos * operadoresDerechos)
+    return pila.get()
+
 expresion1:str = "2 5 * 7 +"
 expresion2:str = "2 3.5 -"
 expresion3:str = "- 10"
 
-print(f"Expresion en notacion pocala + {expresion1}: {calcular_expresion(expresion1)}")
+print(f"Expresion en notacion pocala + {expresion1}: {calcular_expresion_polaca(expresion1)}")
 
 # CM3 - Ejercicio 2 - Unir diccionarios:
 
 from typing import Dict
 
 def unir_diccionarios(a_unir: List[Dict[str,str]]) -> Dict[str,List[str]]:
-    resultado: Dict[str,str] = {}
-    for diccionario in a_unir:
-        listaValores: List[str] = []
-        for key in diccionario.keys():
-            if key in resultado.keys():
-                listaValores.append(diccionario.get(key))
-                for elemento in resultado.get(key):
-                    if elemento not in listaValores:
-                        listaValores.append(elemento)
-                resultado.update({key:listaValores[::-1]})
-            else:
-                resultado.update({key: diccionario.get(key)})
-    return resultado
+  nuevoDiccionario: Dict[str,List[str]] = {}
+  for diccionario in a_unir:
+    for clave, valor in diccionario.items():
+      if clave not in nuevoDiccionario:
+        nuevoDiccionario[clave] = [valor]
+      else:
+        nuevoDiccionario[clave].append(valor)
+  return nuevoDiccionario
 
-print(f"Unir diccionarios: {unir_diccionarios([{'a': '1', 'b': '2'}, {'b': '3', 'c': '4'}, {'a': '5'}])}")
+
+print(f"Unir diccionarios: {unir_diccionarios([{'a':2},{'b':8,'a':5},{'a':7},{'b':3,'a':1},{'c':11,'a':9,'b':1}])}")
 
 # CM3 - Ejercicio 3 - Procesamiento de pedidos:
 
@@ -510,9 +531,67 @@ def decodificar(reglas_codificado: List[Tuple[str,str]], mensaje_codificado: str
                 pass
     return mensaje_decodificado
 
+def decodificar2(reglas_codificado: List[Tuple[str,str]], mensaje_codificado: str) -> str:
+    mensaje_decodificado: str = ""
+    codigos_y_reglas: Tuple[List[str],List[str]] = ([],[])
+    for codigo, significado in reglas_codificado:
+        codigos_y_reglas[0].append(codigo)
+        codigos_y_reglas[1].append(significado)
+    for simbolo in mensaje_codificado:
+        if simbolo in codigos_y_reglas[0]:
+            mensaje_decodificado += codigos_y_reglas[1][codigos_y_reglas[0].index(simbolo)]
+            pass
+    return mensaje_decodificado
 
-print(decodificar([("a", "h"),("b", "o"),("x", "y"),("c","l"),("d","a")], "abcd"))
 
+print(decodificar2([("a", "h"),("b", "o"),("x", "y"),("c","l"),("d","a")], "abcd"))
+
+
+# Guia 5.6 - Ejercicio 5.6 - Descomponer lista de numeros en lista de lista de factores primos de cada numero elemento de la primera lista.
+
+def descomponer_en_factores_primos (numeros: List[int]) -> List[List[int]]:
+    numeros_descompuestos: List[List[int]] = []
+    for numero in numeros:
+        if es_primo_2(numero) or (numero >= -1 and numero <= 1):
+            numeros_descompuestos.append([numero])
+        else:
+            numeros_descompuestos.append(obtener_factores_primos(numero))
+    return numeros_descompuestos
+
+def obtener_factores(numero:int) -> List[int]:
+    factores: List[int] = []
+    posibleFactor: int = 2
+    while posibleFactor < numero:
+        if es_primo(posibleFactor) and (numero % posibleFactor == 0):
+            factores.append(posibleFactor)
+        posibleFactor += 1
+    return factores
+
+def obtener_factores_primos (numero:int) -> List[int]:
+    factores: List[int] = []
+    posible_factor: int = 2
+    while posible_factor < numero:
+        if es_primo_2(posible_factor):
+            if ((numero // posible_factor) % posible_factor == 0):
+                numero_divisible: int = copy(numero)
+                while numero_divisible % posible_factor == 0:
+                    factores.append(posible_factor)
+                    numero_divisible = numero_divisible // posible_factor
+            elif (numero % posible_factor == 0):
+                factores.append(posible_factor)
+        posible_factor += 1
+    return factores
+
+def es_primo_2 (numero: int) -> bool:
+    if abs(numero) >= 2:
+        for entero in range(2,numero,1):
+            if numero % entero == 0:
+                return False
+        return True
+    return False
+
+
+print(f"La descomposicion de los numeros {[5,4,9,12,34,13]} es {descomponer_en_factores_primos([5,4,9,12,34,13])}")
 
 
 

@@ -173,7 +173,7 @@ def eliminar_y_contar_repetidos(lista: List[int]) -> Tuple[List[int],List[Tuple[
     listaSinRepetidos: List[int] = []
     listaDeRepetidos: List[Tuple[int,int]] = []
     for elemento in lista:
-        if not elemento in listaSinRepetidos:
+        if elemento not in listaSinRepetidos:
             cantidadDeRepetidos: int = lista.count(elemento)
             if cantidadDeRepetidos > 1:
                 listaDeRepetidos.append((elemento, cantidadDeRepetidos - 1))
@@ -230,9 +230,9 @@ def armar_triplas_pitagoricas(lista: List[int]) -> List[Tuple[int,int,int]]:
             resultado.append((lista[iterador], lista[izquierda], lista[derecha]))
             izquierda += 1
             derecha -= 1
-    for tripla in resultado:
-        if tripla[0]**2 + tripla[1]**2 > tripla[2]**2:
-            resultado.remove(tripla)
+    for a,b,c in resultado:
+        if not a**2 + b**2 == c**2:
+            resultado.remove((a,b,c))
     return resultado
 
 def encontrar_mayor_igual(elemento: int, lista: List[int]) -> int:
@@ -241,7 +241,7 @@ def encontrar_mayor_igual(elemento: int, lista: List[int]) -> int:
             return posibleMaximo
     return elemento
 
-print(str(armar_triplas_pitagoricas([4,4,5,3,1])))
+print(f"Las triplas de pitagoras de {[4,4,5,3,1]} son: {armar_triplas_pitagoricas([4,4,5,3,1])}")
 
 # Calcular ganancia
 
@@ -675,3 +675,26 @@ def primeros_puestos(competidores: List[Tuple[str,int]], puestos: int) -> List[s
 podio: List[Tuple[str,int]] = [("Juanita",1333),("Trexmita",3234),("Pepex",323),("Maximus",4354)]
 
 print(f"Dado el podio: {podio} los 2 finalistas son {primeros_puestos(podio,2)}")
+
+
+# Ejercicio Parcial - Listas de mismo tamaño con elementos que sumen lo mismo.
+
+def dos_que_suma_k (a: List[int], b: List[int], tamaño: int, resultado_esperado: int) -> bool:
+    resultado: bool = False
+    if len(a) == tamaño and len(b) == tamaño:
+        for elementoA in a:
+            if not resultado:
+                for elementoB in b:
+                    if elementoA + elementoB == resultado_esperado:
+                        resultado = True
+            else:
+                break
+    return resultado
+
+
+lista_a: List[int] = [2,13,26,39,40]
+lista_b: List[int] = [1,21,24,33,53]
+tamaño_listas: int = 5
+resultado_k: int = 34
+
+print(f"Las listas {lista_a} y {lista_b} de tamaño {tamaño_listas} tienen algun par de elementos de que sumen {resultado_k} ? {dos_que_suma_k(lista_a,lista_b,tamaño_listas,resultado_k)}")

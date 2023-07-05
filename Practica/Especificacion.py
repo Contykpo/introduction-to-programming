@@ -594,5 +594,84 @@ def es_primo_2 (numero: int) -> bool:
 print(f"La descomposicion de los numeros {[5,4,9,12,34,13]} es {descomponer_en_factores_primos([5,4,9,12,34,13])}")
 
 
+# Ejercicio random - Existen vecionos que se rian:
+
+def existe_vecino_riendose (mapa: List[List[Tuple[int,int]]], posicion: Tuple[int,int]) -> bool:
+    mapa_y_posicion_validos: bool = True
+    if len(mapa) > 2:
+        dimensiones: int = len(mapa[0])
+        for fila in mapa:
+            if len(fila) != dimensiones:
+                mapa_y_posicion_validos = False
+    if not (0 <= posicion[0] < len(map) and 0 <= posicion[1] < len(mapa[0])):
+        mapa_y_posicion_validos = False
+    assert mapa_y_posicion_validos, "No se cumplen las condiciones iniciales para llegar a un resultado"
+    if 0 <= mapa[posicion[0]][posicion[1]][0] <= 15 and 0 <= mapa[posicion[0]][posicion[1]][1]:
+        if posicion[0] + 1 < len(mapa):
+            if 0 <= mapa[posicion[0] + 1][posicion[1]][0] <= 15:
+                return True
+        if posicion[0] - 1 > 2:
+            if 0 <= mapa[posicion[0] - 1][posicion[1]][0] <= 15:
+                return True
+        if posicion[1] + 1 < dimensiones:
+            if 0 <= mapa[posicion[0]][posicion[1] + 1][0] <= 15:
+                return True
+        if posicion[1] > 2:
+            if 0 <= mapa[posicion[0]][posicion[1] - 1][0] <= 15:
+                return True
+        else:
+            return False
+    else:
+        return False
+
+# Guia 9 - Ejercicio 17 - Calcular fragmento mas largo.
+
+def caclular_fragmento_mas_largo (texto:str) -> int:
+    resultado:int = 0
+    i: int = 0
+    f: int = 0
+    while i < len(texto):
+        if f > resultado:
+            resultado = f
+        if texto[i] == ';':
+            f = 0
+        else:
+            f += 1
+        i += 1
+    return resultado
 
 
+def caclular_fragmento_mas_largo2 (texto:str) -> int:
+    fragmentos: List[str] = texto.split(";")
+    maxima_longitud_fragmento: int = len(fragmentos[0])
+    for fragmento in fragmentos:
+        fragmento += ";"
+        if len(fragmento) > maxima_longitud_fragmento:
+            maxima_longitud_fragmento = len(fragmento)
+    return maxima_longitud_fragmento
+
+print(f"Fragmento mas largo entre: muy;buenas;criaturitas;del;señor " + str(caclular_fragmento_mas_largo2("muy;buenas;criaturitas;del;señor;")))
+
+
+# Ejercicio Parcial - Primeros puestos.
+
+def primeros_puestos(competidores: List[Tuple[str,int]], puestos: int) -> List[str]:
+    finalistas: List[str] = []
+    podio_competidores: Tuple[List[str], List[int]] = ([],[])
+    puntajes_seleccionados: List[int] = []
+    for competidor, puntaje in competidores:
+        if puntaje not in puntajes_seleccionados:
+            podio_competidores[0].append(competidor)
+            podio_competidores[1].append(puntaje)
+            puntajes_seleccionados.append(puntaje)
+    puntajes_seleccionados.sort()
+    puntajes_seleccionados = puntajes_seleccionados[::-1]
+    iterador: int = 0
+    while iterador < puestos:
+        finalistas.append(podio_competidores[0][podio_competidores[1].index(puntajes_seleccionados[iterador])])
+        iterador += 1
+    return finalistas
+
+podio: List[Tuple[str,int]] = [("Juanita",1333),("Trexmita",3234),("Pepex",323),("Maximus",4354)]
+
+print(f"Dado el podio: {podio} los 2 finalistas son {primeros_puestos(podio,2)}")

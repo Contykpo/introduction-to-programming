@@ -1,0 +1,56 @@
+// Ejercicio 1: Sorting
+
+Competidor = struct<nombre: string, puntos: nat, intentos: nat>
+
+TablaKPosiciones(in competidores: Array<Competidor>, in k: nat): Secuencia<string>
+{
+    puntajesCompetidores : DiccionarioDigital<> = new DiccionarioDigital<puntos: nat, struct<intentos: nat, posicion: nat>>();
+
+    for (int i = 0; i < competidores.tamaño(); i++) //O(n)
+    {
+        if(competidores[i].puntos in puntajesCompetidores)
+        {
+            for (int j = 0; j < puntajesCompetidores[competidores[i].puntos]; j++)
+            {
+                if (puntajesCompetidores[competidores[i].puntos][j].intentos < competidores[i].intentos)
+                {
+                    puntajesCompetidores.obtener(competidores[i].puntos)[j].intentos = competidores[i].intentos;
+                    puntajesCompetidores.obtener(competidores[i].puntos)[j].posicion = i;
+                }
+                else (puntajesCompetidores[competidores[i].puntos][j].intentos == competidores[i].intentos)
+                {
+                    puntajesCompetidores.definir(competidores[i].puntos, puntajesCompetidores.obtener(competidores[i].puntos).agregar(<intentos: competidores[i].intentos, posicion: i>));
+                }
+            }
+        }
+        else
+        {
+            listaCompetidores : ListaEnlazada = listaCompetidores.listaVacia();
+            listaCompetidores.agregar(<intentos: competidores[i].intentos, posicion: i>) 
+            puntajesCompetidores.definir(competidores[i].puntos, listaCompetidores);
+        }
+    }
+
+    temporalMaximos: Array<Competidor> := new Array<Competidor>[a.length]; //O(n)
+
+    for (int i = 0; i < competidores.tamaño(); i++) //O(n)
+    {
+        temporal[i].nombre := competidores[i].nombre;
+        temporal[i].intentos := competidores[i].intentos;
+        temporal[i].posicion := competidores[i].puntaje;
+    }
+
+    maxHeapCompetidor := HeapifyMax(temporal); //O(n), Algoritmo de Floyd
+
+    res: Array<Competidor> := new Array<Competidor>[k]; //O(k)
+    indexRes : nat = 0;
+
+    for (int i = 0; i < k; i++) //O(n)
+    {
+        
+    }
+
+
+    //Total: O(n + log n)
+    return res;
+}

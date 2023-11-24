@@ -4,22 +4,22 @@ Competidor = struct<nombre: string, puntos: nat, intentos: nat>
 
 TablaKPosiciones(in competidores: Array<Competidor>, in k: nat): Secuencia<string>
 {
-    puntajesCompetidores : DiccionarioDigital<> = new DiccionarioDigital<puntos: nat, struct<intentos: nat, posicion: nat>>();
+    puntajesCompetidores : DiccionarioDigital<> = new DiccionarioDigital<puntos: nat, ListaEnlazada(struct<intentos: nat, posicion: nat>)>(); // O(n)
 
-    for (int i = 0; i < competidores.tamaño(); i++) //O(n)
+    for (int i = 0; i < competidores.tamaño(); i++) //O(n + k)
     {
         if(competidores[i].puntos in puntajesCompetidores)
         {
-            for (int j = 0; j < puntajesCompetidores[competidores[i].puntos]; j++)
+            for (int j = 0; j < puntajesCompetidores.obtener(competidores[i].puntos).tamaño(); j++)
             {
-                if (puntajesCompetidores[competidores[i].puntos][j].intentos < competidores[i].intentos)
+                if (puntajesCompetidores.obtener(competidores[i].puntos).encontrar(j).intentos < competidores[i].intentos)
                 {
-                    puntajesCompetidores.obtener(competidores[i].puntos)[j].intentos = competidores[i].intentos;
-                    puntajesCompetidores.obtener(competidores[i].puntos)[j].posicion = i;
+                    puntajesCompetidores.obtener(competidores[i].puntos).encontrar(j).intentos = competidores[i].intentos;
+                    puntajesCompetidores.obtener(competidores[i].puntos).encontrar(j).posicion = i;
                 }
-                else (puntajesCompetidores[competidores[i].puntos][j].intentos == competidores[i].intentos)
+                else
                 {
-                    puntajesCompetidores.definir(competidores[i].puntos, puntajesCompetidores.obtener(competidores[i].puntos).agregar(<intentos: competidores[i].intentos, posicion: i>));
+                    puntajesCompetidores.definir(competidores[i].puntos, puntajesCompetidores.obtener(competidores[i].puntos).agregar(<intentos: competidores[i].intentos, posicion: i>)); // O(k)
                 }
             }
         }
@@ -35,22 +35,27 @@ TablaKPosiciones(in competidores: Array<Competidor>, in k: nat): Secuencia<strin
 
     for (int i = 0; i < competidores.tamaño(); i++) //O(n)
     {
-        temporal[i].nombre := competidores[i].nombre;
-        temporal[i].intentos := competidores[i].intentos;
-        temporal[i].posicion := competidores[i].puntaje;
+        temporalMaximos[i].nombre := competidores[i].nombre;
+        temporalMaximos[i].intentos := competidores[i].intentos;
+        temporalMaximos[i].posicion := competidores[i].puntaje;
     }
 
     maxHeapCompetidor := HeapifyMax(temporal); //O(n), Algoritmo de Floyd
 
-    res: Array<Competidor> := new Array<Competidor>[k]; //O(k)
-    indexRes : nat = 0;
+    tablakCompetidores: Array<Competidor> := new Array<Competidor>[k]; //O(k)
+    indexT : nat = 0;
 
-    for (int i = 0; i < k; i++) //O(n)
+    for (int i = 0; i < k && indexT < k; i++) //O(n) // O(k * log n + k) = O(k * log n) 
     {
-        
+        liderPuntaje : Competidor = maxHeapCompetidor.pop(); // O(log n)
+        iterador : IteradorBidireccional = puntajesCompetidores[liderPuntaje.puntaje].iterador(); // O(1)
+        while iterador.haySiguiente() // O(k)
+        {
+            tablakCompetidores[indexT] = iterador.siguiente();
+            indexT++;
+        }
     }
 
-
-    //Total: O(n + log n)
-    return res;
+    //Total: O(n + k * log n)
+    return tablakCompetidores;
 }

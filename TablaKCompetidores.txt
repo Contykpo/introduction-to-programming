@@ -51,8 +51,8 @@ TablaKPosiciones(in competidores: Array<Competidor>, in k: nat): Secuencia<strin
         iterador : IteradorBidireccional = puntajesCompetidores[liderPuntaje.puntaje].iterador(); // O(1)
         while iterador.haySiguiente() // O(k)
         {
-            tablakCompetidores[indexT] = iterador.siguiente();
-            indexT++;
+            tablakCompetidores[indexT] = competidores[iterador.siguiente().posicion] ;
+            iterador.siguiente()indexT++;
         }
     }
 

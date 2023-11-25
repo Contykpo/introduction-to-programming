@@ -1,0 +1,6 @@
+Ejercicio 13: Ordenamiento:
+
+OrdenarArregloTupla (arr : Array<Tupla<c1: nat, c2: String>>) el String c2, tiene una longitud maxima de L.
+{
+    
+}

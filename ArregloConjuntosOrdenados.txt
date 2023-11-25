@@ -1,0 +1,48 @@
+Ejercicio 1: Ordenamiento:
+
+OrdenarConjuntos(arrA: Array<ConjuntoLineal<nat>>) : Array<ConjuntoLineal<nat>>
+{
+    cardinalMaximo : nat = 0; // O(1)
+
+    for (int i = 0; i < arrA.tamaño; i++) // O(N)
+    {
+        if (arrA[i].tamaño > cardinalMaximo)
+        {
+            cardinalMaximo = arrA[i].tamaño;
+        }
+    }
+
+    buckets : Array<ListaEnlazada<ConjuntoLineal<nat>>> = new Array<ListaEnlazada<ConjuntoLineal<nat>>>(cardinalMaximo) // O(K)
+
+    for (int i = 0; i < buckets.tamaño; i++) // O(K) 
+    {
+        buckets[i] = ListaEnlazada<ConjuntoLineal<nat>>.listaVacia();
+    }
+
+    for (int i = 0; i < arrA.tamaño; i++) // O(N * K)
+    {
+        if (arrA[i].tamaño > 0) // Solo es como guarda, en la practica se da en todas las iteraciones.
+        {
+            buckets[arrA[i].tamaño - 1].agregar(arrA[i]) // O(K) porque se esta copiando el conjunto de cardinal K como maximo.
+        }
+    }
+
+    arrB : Array<ConjuntoLineal<nat>> = new Array<ConjuntoLineal<nat>>(arrA.tamaño()); // O(N)
+    indexB : nat = 0;
+
+    for (int i = 0; i < buckets.tamaño(); i++) //O(K + K*K) = O(K^2) pero como K^2 <= N, entonces O(N)
+    {
+        if (buckets[i].tamaño() > 0)
+        {
+            iterador : IteradorBidireccional = buckets[i].iterador;
+            while iterador.haySiguiente() // O(K)
+            {
+                arrB[indexB] = iterador.siguiente(); // O(K) porque se esta copiando el conjunto de cardinal K como maximo.
+                indexB++;
+            }
+        }
+    }
+
+    return arrB;
+
+}
